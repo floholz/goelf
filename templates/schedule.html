@@ -127,90 +127,113 @@
 </div>
 
 <script>
-// Navigation data from data attributes
-const finishedWeeks = [];
-const upcomingWeeks = [];
+(function() {
+    // Navigation data from data attributes
+    const finishedWeeks = [];
+    const upcomingWeeks = [];
 
-{{range .FinishedMatches}}
-finishedWeeks.push({{.Week}});
-{{end}}
+    {{range .FinishedMatches}}
+    finishedWeeks.push({{.Week}});
+    {{end}}
 
-{{range .UpcomingMatches}}
-upcomingWeeks.push({{.Week}});
-{{end}}
+    {{range .UpcomingMatches}}
+    upcomingWeeks.push({{.Week}});
+    {{end}}
 
-const navigationData = {
-    finishedWeeks: finishedWeeks,
-    upcomingWeeks: upcomingWeeks
-};
+    const navigationData = {
+        finishedWeeks: finishedWeeks,
+        upcomingWeeks: upcomingWeeks
+    };
 
-function isUpcomingSectionInView() {
-    const upcomingSection = document.querySelector('div[data-section="upcoming"]');
-    if (!upcomingSection) return false;
-    return upcomingSection.getBoundingClientRect().top - document.documentElement.clientHeight < 0;
-}
+    function isUpcomingSectionInView() {
+        const upcomingSection = document.querySelector('div[data-section="upcoming"]');
+        if (!upcomingSection) return false;
+        return upcomingSection.getBoundingClientRect().top - document.documentElement.clientHeight < 0;
+    }
 
-function navigateToNextSection() {
-    // Check if upcoming section is in view
-    if (isUpcomingSectionInView()) {
-        // If upcoming section is visible, go to latest finished week
-        if (navigationData.finishedWeeks.length > 0) {
-            const latestWeek = navigationData.finishedWeeks[0]; // Latest finished week
-            scrollToWeek('finished', latestWeek);
-        }
-    } else {
-        // If upcoming section is not visible, go to upcoming section
-        if (navigationData.upcomingWeeks.length > 0) {
-            const nextWeek = navigationData.upcomingWeeks[0]; // First upcoming week
-            scrollToWeek('upcoming', nextWeek);
+    function navigateToNextSection() {
+        // Check if upcoming section is in view
+        if (isUpcomingSectionInView()) {
+            // If upcoming section is visible, go to latest finished week
+            if (navigationData.finishedWeeks.length > 0) {
+                const latestWeek = navigationData.finishedWeeks[0]; // Latest finished week
+                scrollToWeek('finished', latestWeek);
+            }
+        } else {
+            // If upcoming section is not visible, go to upcoming section
+            if (navigationData.upcomingWeeks.length > 0) {
+                const nextWeek = navigationData.upcomingWeeks[0]; // First upcoming week
+                scrollToWeek('upcoming', nextWeek);
+            }
         }
     }
-}
 
-function scrollToWeek(section, week) {
-    const weekElement = document.querySelector(`[data-section="${section}"][data-week="${week}"]`);
-    if (weekElement) {
-        weekElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
+    function scrollToWeek(section, week) {
+        const weekElement = document.querySelector(`[data-section="${section}"][data-week="${week}"]`);
+        if (weekElement) {
+            weekElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+            
+            // Add highlight effect
+            weekElement.classList.add('ring-4', 'ring-blue-300', 'ring-opacity-50');
+            setTimeout(() => {
+                weekElement.classList.remove('ring-4', 'ring-blue-300', 'ring-opacity-50');
+            }, 2000);
+        }
+    }
+
+    function isElementInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+
+    // Update button icon based on current section
+    function updateButtonIcon() {
+        const button = document.getElementById('nav-button');
+        const icon = document.getElementById('nav-icon');
         
-        // Add highlight effect
-        weekElement.classList.add('ring-4', 'ring-blue-300', 'ring-opacity-50');
-        setTimeout(() => {
-            weekElement.classList.remove('ring-4', 'ring-blue-300', 'ring-opacity-50');
-        }, 2000);
+        // Check if elements exist before trying to update them
+        if (!button || !icon) {
+            return;
+        }
+        
+        if (isUpcomingSectionInView()) {
+            // Show up arrow (go to finished)
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>';
+            button.title = 'Go to latest finished matches';
+        } else {
+            // Show down arrow (go to upcoming)
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>';
+            button.title = 'Go to upcoming matches';
+        }
     }
-}
 
-function isElementInViewport(el) {
-    const rect = el.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-}
-
-// Update button icon based on current section
-function updateButtonIcon() {
-    const button = document.getElementById('nav-button');
-    const icon = document.getElementById('nav-icon');
-    
-    if (isUpcomingSectionInView()) {
-        // Show up arrow (go to finished)
-        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>';
-        button.title = 'Go to latest finished matches';
-    } else {
-        // Show down arrow (go to upcoming)
-        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>';
-        button.title = 'Go to upcoming matches';
+    // Clean up event listeners when leaving the page
+    function cleanupScheduleEvents() {
+        window.removeEventListener('scroll', updateButtonIcon);
     }
-}
 
-// Update icon on scroll
-window.addEventListener('scroll', updateButtonIcon);
-document.addEventListener('DOMContentLoaded', updateButtonIcon);
+    // Make navigateToNextSection globally accessible for the onclick handler
+    window.navigateToNextSection = navigateToNextSection;
+
+    // Update icon on scroll
+    window.addEventListener('scroll', updateButtonIcon);
+    document.addEventListener('DOMContentLoaded', updateButtonIcon);
+
+    // Clean up when HTMX swaps content
+    document.addEventListener('htmx:beforeSwap', function(event) {
+        // Only cleanup if we're leaving the schedule page
+        if (event.target.id === 'content') {
+            cleanupScheduleEvents();
+        }
+    });
+})();
 </script>
 {{end}} 
