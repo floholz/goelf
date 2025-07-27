@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -65,6 +66,12 @@ func main() {
 	r.Static("/static", "./static")
 	// Serve assets (logos)
 	r.Static("/assets", "./assets")
+	// Add custom template functions
+	r.SetFuncMap(template.FuncMap{
+		"add": func(a, b int) int {
+			return a + b
+		},
+	})
 	r.LoadHTMLGlob("templates/*")
 
 	// API routes
