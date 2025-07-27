@@ -31,6 +31,11 @@ type Schedule struct {
 	AwayLogo   string // Away team logo
 }
 
+type GameWeek struct {
+	Week    int
+	Matches []Schedule
+}
+
 type Scoreboard struct {
 	StatcrewID string `json:"statcrewID"`
 	HomeScore  string `json:"homeScore"`
@@ -325,14 +330,47 @@ func getSchedule(c *gin.Context) {
 		// Add team logos
 		s.HomeLogo = teamLogos[s.HomeTeam]
 		s.AwayLogo = teamLogos[s.AwayTeam]
+
+		// Format date to DD.MM
+		if len(s.Date) >= 10 {
+			// Parse the date (format: "2025-05-17T19:00:00.000Z")
+			dateStr := s.Date[:10] // Get "2025-05-17"
+			if len(dateStr) == 10 && dateStr[4] == '-' && dateStr[7] == '-' {
+				day := dateStr[8:10]
+				month := dateStr[5:7]
+				s.Date = day + "." + month
+			}
+		}
+
 		schedules = append(schedules, s)
+	}
+
+	// Group matches by game week
+	gameWeeks := make(map[int][]Schedule)
+	for _, match := range schedules {
+		gameWeeks[match.GameWeek] = append(gameWeeks[match.GameWeek], match)
+	}
+
+	// Convert to sorted slice
+	var sortedGameWeeks []GameWeek
+	for week, matches := range gameWeeks {
+		sortedGameWeeks = append(sortedGameWeeks, GameWeek{Week: week, Matches: matches})
+	}
+
+	// Sort by week number
+	for i := 0; i < len(sortedGameWeeks)-1; i++ {
+		for j := i + 1; j < len(sortedGameWeeks); j++ {
+			if sortedGameWeeks[i].Week > sortedGameWeeks[j].Week {
+				sortedGameWeeks[i], sortedGameWeeks[j] = sortedGameWeeks[j], sortedGameWeeks[i]
+			}
+		}
 	}
 
 	// Check if request is from HTMX (has HX-Request header)
 	if c.GetHeader("HX-Request") == "true" {
-		c.HTML(http.StatusOK, "schedule.html", schedules)
+		c.HTML(http.StatusOK, "schedule.html", sortedGameWeeks)
 	} else {
-		c.JSON(http.StatusOK, schedules)
+		c.JSON(http.StatusOK, sortedGameWeeks)
 	}
 }
 
