@@ -1,8 +1,8 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.21 AS builder
 
 # Install git and ca-certificates (needed for go mod download)
-RUN apk add --no-cache git ca-certificates
+RUN apt-get update && apt-get install -y git ca-certificates gcc libc6-dev && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o goelf .
 
 # Final stage
 FROM alpine:latest
@@ -45,14 +45,14 @@ RUN mkdir -p /app/database /app/assets /app/templates && \
 WORKDIR /app
 
 # Copy the binary from builder stage
-COPY --from=builder /app/main .
+COPY --from=builder /app/goelf .
 
 # Copy static files
 COPY --from=builder /app/assets ./assets
 COPY --from=builder /app/templates ./templates
 
 # Change ownership of the binary
-RUN chown appuser:appgroup /app/main
+RUN chown appuser:appgroup /app/goelf
 
 # Switch to non-root user
 USER appuser
@@ -65,4 +65,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1
 
 # Run the application
-CMD ["./main"] 
+CMD ["./goelf"] 
