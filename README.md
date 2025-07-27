@@ -61,7 +61,8 @@ goelf/
 │   ├── scoreboard.html  # Scoreboard display template
 │   ├── schedule.html    # Schedule display template
 │   └── refresh.html     # Refresh status template
-└── football.db          # SQLite database (created automatically)
+└── database/
+    └── elf25.db         # SQLite database (created automatically)
 ```
 
 ## Database Schema

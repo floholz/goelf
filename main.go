@@ -98,7 +98,7 @@ func main() {
 
 func initDB() {
 	var err error
-	db, err = sql.Open("sqlite3", "./football.db")
+	db, err = sql.Open("sqlite3", "./database/elf25.db")
 	if err != nil {
 		log.Fatal(err)
 	}
