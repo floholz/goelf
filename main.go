@@ -58,6 +58,7 @@ func main() {
 	{
 		api.GET("/schedule", getSchedule)
 		api.GET("/scoreboard", getScoreboard)
+		api.GET("/playoffs", getPlayoffs)
 		api.GET("/refresh", refreshData)
 		api.GET("/mock", insertMockDataHandler)
 	}
@@ -541,6 +542,166 @@ func getScoreboard(c *gin.Context) {
 		c.HTML(http.StatusOK, "scoreboard.html", standings)
 	} else {
 		c.JSON(http.StatusOK, standings)
+	}
+}
+
+type PlayoffBracket struct {
+	WildcardRound []PlayoffGame
+	SemiFinals    []PlayoffGame
+	Championship  PlayoffGame
+}
+
+type PlayoffGame struct {
+	Team1    string
+	Team2    string
+	Winner   string
+	Seed1    int
+	Seed2    int
+	IsPlayed bool
+}
+
+func getPlayoffs(c *gin.Context) {
+	// Get all teams and their standings
+	rows, err := db.Query("SELECT home_team, away_team, home_score, away_score FROM schedule WHERE home_score > 0 OR away_score > 0 ORDER BY date, time")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	// Calculate standings (same logic as getScoreboard)
+	teamStats := make(map[string]struct {
+		wins   int
+		losses int
+	})
+
+	for rows.Next() {
+		var homeTeam, awayTeam string
+		var homeScore, awayScore int
+		err := rows.Scan(&homeTeam, &awayTeam, &homeScore, &awayScore)
+		if err != nil {
+			log.Printf("Error scanning schedule: %v", err)
+			continue
+		}
+
+		if homeScore > 0 || awayScore > 0 {
+			if homeScore > awayScore {
+				teamStats[homeTeam] = struct {
+					wins   int
+					losses int
+				}{teamStats[homeTeam].wins + 1, teamStats[homeTeam].losses}
+				teamStats[awayTeam] = struct {
+					wins   int
+					losses int
+				}{teamStats[awayTeam].wins, teamStats[awayTeam].losses + 1}
+			} else if awayScore > homeScore {
+				teamStats[awayTeam] = struct {
+					wins   int
+					losses int
+				}{teamStats[awayTeam].wins + 1, teamStats[awayTeam].losses}
+				teamStats[homeTeam] = struct {
+					wins   int
+					losses int
+				}{teamStats[homeTeam].wins, teamStats[homeTeam].losses + 1}
+			}
+		}
+	}
+
+	// Create standings for all teams
+	var allTeams []struct {
+		teamName string
+		division string
+		wins     int
+		losses   int
+	}
+
+	for teamName, stats := range teamStats {
+		division := teamDivisions[teamName]
+		if division == "" {
+			division = "UNKNOWN"
+		}
+
+		allTeams = append(allTeams, struct {
+			teamName string
+			division string
+			wins     int
+			losses   int
+		}{teamName, division, stats.wins, stats.losses})
+	}
+
+	// Sort all teams by wins (descending), then by losses (ascending)
+	sort.Slice(allTeams, func(i, j int) bool {
+		if allTeams[i].wins != allTeams[j].wins {
+			return allTeams[i].wins > allTeams[j].wins
+		}
+		return allTeams[i].losses < allTeams[j].losses
+	})
+
+	// Get division champions (top team from each division)
+	divisionChampions := make(map[string]string)
+	for _, team := range allTeams {
+		if _, exists := divisionChampions[team.division]; !exists {
+			divisionChampions[team.division] = team.teamName
+		}
+	}
+
+	// Create seeds 1-4 from division champions
+	var seeds []string
+	divisions := []string{"EAST", "WEST", "NORTH", "SOUTH"}
+	for _, division := range divisions {
+		if champion, exists := divisionChampions[division]; exists {
+			seeds = append(seeds, champion)
+		}
+	}
+
+	// Sort division champions by overall record for seeds 1-4
+	sort.Slice(seeds, func(i, j int) bool {
+		team1Stats := teamStats[seeds[i]]
+		team2Stats := teamStats[seeds[j]]
+		if team1Stats.wins != team2Stats.wins {
+			return team1Stats.wins > team2Stats.wins
+		}
+		return team1Stats.losses < team2Stats.losses
+	})
+
+	// Get wildcard teams (best 2 non-division champions)
+	var wildcardTeams []string
+	for _, team := range allTeams {
+		isChampion := false
+		for _, champion := range seeds {
+			if team.teamName == champion {
+				isChampion = true
+				break
+			}
+		}
+		if !isChampion {
+			wildcardTeams = append(wildcardTeams, team.teamName)
+		}
+	}
+
+	// Take top 2 wildcard teams
+	if len(wildcardTeams) > 2 {
+		wildcardTeams = wildcardTeams[:2]
+	}
+
+	// Create playoff bracket
+	bracket := PlayoffBracket{
+		WildcardRound: []PlayoffGame{
+			{Team1: seeds[2], Team2: wildcardTeams[1], Seed1: 3, Seed2: 6, IsPlayed: false}, // Seed 3 vs Seed 6
+			{Team1: seeds[3], Team2: wildcardTeams[0], Seed1: 4, Seed2: 5, IsPlayed: false}, // Seed 4 vs Seed 5
+		},
+		SemiFinals: []PlayoffGame{
+			{Team1: seeds[0], Team2: "TBD", Seed1: 1, Seed2: 0, IsPlayed: false}, // Seed 1 vs TBD
+			{Team1: seeds[1], Team2: "TBD", Seed1: 2, Seed2: 0, IsPlayed: false}, // Seed 2 vs TBD
+		},
+		Championship: PlayoffGame{Team1: "TBD", Team2: "TBD", IsPlayed: false},
+	}
+
+	// Check if request is from HTMX
+	if c.GetHeader("HX-Request") == "true" {
+		c.HTML(http.StatusOK, "playoffs.html", bracket)
+	} else {
+		c.JSON(http.StatusOK, bracket)
 	}
 }
 

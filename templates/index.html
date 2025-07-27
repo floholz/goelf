@@ -38,7 +38,7 @@
         <!-- Navigation Tabs -->
         <div class="flex justify-center mb-8">
             <div class="bg-white rounded-lg shadow p-1">
-                <button 
+                <button
                     class="px-4 py-2 rounded-md transition-colors"
                     hx-get="/api/scoreboard"
                     hx-target="#content"
@@ -47,6 +47,16 @@
                     onclick="setActiveTab(this, 'scoreboard')"
                     id="scoreboard-tab">
                     Standings
+                </button>
+                <button
+                    class="px-4 py-2 rounded-md transition-colors"
+                    hx-get="/api/playoffs"
+                    hx-target="#content"
+                    hx-swap="innerHTML"
+                    hx-trigger="click"
+                    onclick="setActiveTab(this, 'playoffs')"
+                    id="playoffs-tab">
+                    Playoffs
                 </button>
                 <button 
                     class="px-4 py-2 rounded-md transition-colors"
@@ -79,7 +89,7 @@
         // Set active tab styling
         function setActiveTab(button, tabName) {
             // Remove active class from all tabs
-            document.querySelectorAll('#scoreboard-tab, #schedule-tab').forEach(tab => {
+            document.querySelectorAll('#scoreboard-tab, #playoffs-tab, #schedule-tab').forEach(tab => {
                 tab.classList.remove('bg-blue-500', 'text-white');
                 tab.classList.add('text-gray-600', 'hover:bg-gray-100');
             });
