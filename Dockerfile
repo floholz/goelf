@@ -1,8 +1,8 @@
 # Build stage
 FROM golang:1.21 AS builder
 
-# Install git and ca-certificates (needed for go mod download)
-RUN apt-get update && apt-get install -y git ca-certificates gcc libc6-dev && rm -rf /var/lib/apt/lists/*
+# Install build dependencies
+RUN apt-get update && apt-get install -y git ca-certificates gcc libc6-dev libsqlite3-dev && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -16,11 +16,11 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application with CGO enabled
 RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o goelf .
 
 # Final stage
-FROM alpine:latest
+FROM debian:bookworm-slim
 
 # Add labels for GitHub Container Registry
 LABEL org.opencontainers.image.source="https://github.com/floholz/goelf"
@@ -30,12 +30,12 @@ LABEL org.opencontainers.image.vendor="floholz"
 LABEL org.opencontainers.image.title="GOELF"
 LABEL org.opencontainers.image.version="1.0.0"
 
-# Install ca-certificates for HTTPS requests
-RUN apk --no-cache add ca-certificates sqlite
+# Install ca-certificates and sqlite runtime
+RUN apt-get update && apt-get install -y ca-certificates sqlite3 wget && rm -rf /var/lib/apt/lists/*
 
 # Create app user
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -u 1001 -S appuser -G appgroup
+RUN groupadd -g 1001 appgroup && \
+    useradd -u 1001 -g appgroup -s /bin/bash appuser
 
 # Create necessary directories
 RUN mkdir -p /app/database /app/assets /app/templates && \
@@ -51,8 +51,9 @@ COPY --from=builder /app/goelf .
 COPY --from=builder /app/assets ./assets
 COPY --from=builder /app/templates ./templates
 
-# Change ownership of the binary
-RUN chown appuser:appgroup /app/goelf
+# Make the binary executable and change ownership
+RUN chmod +x /app/goelf && \
+    chown appuser:appgroup /app/goelf
 
 # Switch to non-root user
 USER appuser
