@@ -27,6 +27,8 @@ type Schedule struct {
 	AwayScore  int    `json:"awayScore"`
 	Slug       string `json:"slug"`
 	GameDate   string `json:"gamedate"`
+	HomeLogo   string // Home team logo
+	AwayLogo   string // Away team logo
 }
 
 type Scoreboard struct {
@@ -51,6 +53,8 @@ func main() {
 
 	// Serve static files (for HTMX frontend)
 	r.Static("/static", "./static")
+	// Serve assets (logos)
+	r.Static("/assets", "./assets")
 	r.LoadHTMLGlob("templates/*")
 
 	// API routes
@@ -318,6 +322,9 @@ func getSchedule(c *gin.Context) {
 			log.Printf("Error scanning schedule: %v", err)
 			continue
 		}
+		// Add team logos
+		s.HomeLogo = teamLogos[s.HomeTeam]
+		s.AwayLogo = teamLogos[s.AwayTeam]
 		schedules = append(schedules, s)
 	}
 
@@ -338,6 +345,7 @@ type TeamStanding struct {
 	Position int
 	SoS      float64 // Strength of Schedule
 	SoV      float64 // Strength of Victory
+	Logo     string  // Team logo filename
 }
 
 // Division mapping
@@ -359,6 +367,27 @@ var teamDivisions = map[string]string{
 	"Madrid Bravos":        "SOUTH",
 	"Raiders Tirol":        "SOUTH",
 	"Helvetic Mercenaries": "SOUTH",
+}
+
+// Team logo mapping
+var teamLogos = map[string]string{
+	"Vienna Vikings":       "vik.png",
+	"Prague Lions":         "prg.png",
+	"Wroclaw Panthers":     "wpa.png",
+	"Fehérvár Enthroners":  "ent.png",
+	"Fehervar Enthroners":  "ent.png",
+	"Stuttgart Surge":      "srg.png",
+	"Paris Musketeers":     "par.png",
+	"Frankfurt Galaxy":     "fgy.png",
+	"Cologne Centurions":   "cce.png",
+	"Nordic Storm":         "nds.png",
+	"Rhein Fire":           "rhf.png",
+	"Berlin Thunder":       "bth.png",
+	"Hamburg Sea Devils":   "hsd.png",
+	"Munich Ravens":        "muc.png",
+	"Madrid Bravos":        "mad.png",
+	"Raiders Tirol":        "rai.png",
+	"Helvetic Mercenaries": "hvm.png",
 }
 
 func getScoreboard(c *gin.Context) {
@@ -499,6 +528,7 @@ func getScoreboard(c *gin.Context) {
 			Record:   fmt.Sprintf("%d-%d", stats.wins, stats.losses),
 			SoS:      teamSoS[teamName],
 			SoV:      teamSoV[teamName],
+			Logo:     teamLogos[teamName],
 		}
 
 		divisionStandings[division] = append(divisionStandings[division], standing)
@@ -558,6 +588,8 @@ type PlayoffGame struct {
 	Seed1    int
 	Seed2    int
 	IsPlayed bool
+	Logo1    string // Team1 logo
+	Logo2    string // Team2 logo
 }
 
 func getPlayoffs(c *gin.Context) {
@@ -687,14 +719,14 @@ func getPlayoffs(c *gin.Context) {
 	// Create playoff bracket
 	bracket := PlayoffBracket{
 		WildcardRound: []PlayoffGame{
-			{Team1: seeds[2], Team2: wildcardTeams[1], Seed1: 3, Seed2: 6, IsPlayed: false}, // Seed 3 vs Seed 6
-			{Team1: seeds[3], Team2: wildcardTeams[0], Seed1: 4, Seed2: 5, IsPlayed: false}, // Seed 4 vs Seed 5
+			{Team1: seeds[2], Team2: wildcardTeams[1], Seed1: 3, Seed2: 6, IsPlayed: false, Logo1: teamLogos[seeds[2]], Logo2: teamLogos[wildcardTeams[1]]}, // Seed 3 vs Seed 6
+			{Team1: seeds[3], Team2: wildcardTeams[0], Seed1: 4, Seed2: 5, IsPlayed: false, Logo1: teamLogos[seeds[3]], Logo2: teamLogos[wildcardTeams[0]]}, // Seed 4 vs Seed 5
 		},
 		SemiFinals: []PlayoffGame{
-			{Team1: seeds[0], Team2: "TBD", Seed1: 1, Seed2: 0, IsPlayed: false}, // Seed 1 vs TBD
-			{Team1: seeds[1], Team2: "TBD", Seed1: 2, Seed2: 0, IsPlayed: false}, // Seed 2 vs TBD
+			{Team1: seeds[0], Team2: "TBD", Seed1: 1, Seed2: 0, IsPlayed: false, Logo1: teamLogos[seeds[0]], Logo2: ""}, // Seed 1 vs TBD
+			{Team1: seeds[1], Team2: "TBD", Seed1: 2, Seed2: 0, IsPlayed: false, Logo1: teamLogos[seeds[1]], Logo2: ""}, // Seed 2 vs TBD
 		},
-		Championship: PlayoffGame{Team1: "TBD", Team2: "TBD", IsPlayed: false},
+		Championship: PlayoffGame{Team1: "TBD", Team2: "TBD", IsPlayed: false, Logo1: "", Logo2: ""},
 	}
 
 	// Check if request is from HTMX

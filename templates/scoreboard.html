@@ -26,7 +26,12 @@
                                 {{.Position}}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-dark-text">
-                                {{.TeamName}}
+                                <div class="flex items-center">
+                                    {{if .Logo}}
+                                    <img src="/assets/teams/{{.Logo}}" alt="{{.TeamName}} Logo" class="w-6 h-6 mr-3 rounded-full">
+                                    {{end}}
+                                    {{.TeamName}}
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900 dark:text-dark-text">
                                 {{.Wins}}

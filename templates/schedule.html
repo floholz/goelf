@@ -5,9 +5,19 @@
             <div class="flex justify-between items-center">
                 <div class="flex-1">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="font-semibold text-lg text-gray-900 dark:text-dark-text">{{.HomeTeam}}</span>
+                        <div class="flex items-center">
+                            {{if .HomeLogo}}
+                            <img src="/assets/teams/{{.HomeLogo}}" alt="{{.HomeTeam}} Logo" class="w-8 h-8 mr-3 rounded-full">
+                            {{end}}
+                            <span class="font-semibold text-lg text-gray-900 dark:text-dark-text">{{.HomeTeam}}</span>
+                        </div>
                         <span class="text-sm text-gray-500 dark:text-gray-400">vs</span>
-                        <span class="font-semibold text-lg text-gray-900 dark:text-dark-text">{{.AwayTeam}}</span>
+                        <div class="flex items-center">
+                            <span class="font-semibold text-lg text-gray-900 dark:text-dark-text">{{.AwayTeam}}</span>
+                            {{if .AwayLogo}}
+                            <img src="/assets/teams/{{.AwayLogo}}" alt="{{.AwayTeam}} Logo" class="w-8 h-8 ml-3 rounded-full">
+                            {{end}}
+                        </div>
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400">Week {{.GameWeek}} • {{.Location}}</div>
                     {{if or (gt .HomeScore 0) (gt .AwayScore 0)}}

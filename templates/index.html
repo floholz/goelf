@@ -57,8 +57,13 @@
                     </svg>
                 </button>
             </div>
-            <h1 class="text-4xl font-bold text-gray-800 dark:text-dark-text mb-2">European League Football</h1>
-            <p class="text-gray-600 dark:text-gray-400">Live scores and upcoming matches</p>
+            <div class="flex justify-center items-center mb-4">
+                <img src="/assets/elf-logo.png" alt="ELF Logo" class="h-16 w-auto mr-4">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-800 dark:text-dark-text mb-2">European League Football</h1>
+                    <p class="text-gray-600 dark:text-gray-400">Live scores and upcoming matches</p>
+                </div>
+            </div>
         </header>
 
         <!-- Refresh Button -->
@@ -104,7 +109,7 @@
                     hx-trigger="click"
                     onclick="setActiveTab(this, 'schedule')"
                     id="schedule-tab">
-                    Upcoming Matches
+                    Schedule
                 </button>
             </div>
         </div>
