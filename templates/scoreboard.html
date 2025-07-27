@@ -1,68 +1,68 @@
 {{if .}}
     <div class="space-y-8">
         {{range .}}
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div class="bg-gray-50 px-6 py-3 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">{{.Division}} DIVISION</h2>
+        <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-sm">
+            <div class="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-dark-border">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-dark-text">{{.Division}} DIVISION</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Wins</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Losses</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Record</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">SoS</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">SoV</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Position</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Team</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Wins</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Losses</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Record</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">SoS</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">SoV</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-dark-border">
                         {{range .Teams}}
-                        <tr class="hover:bg-gray-50 transition-colors fade-in">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors fade-in">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-dark-text">
                                 {{.Position}}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-dark-text">
                                 {{.TeamName}}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900 dark:text-dark-text">
                                 {{.Wins}}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900 dark:text-dark-text">
                                 {{.Losses}}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-medium">
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full
-                                    {{if ge .Wins 8}}bg-green-100 text-green-800
-                                    {{else if ge .Wins 6}}bg-blue-100 text-blue-800
-                                    {{else if ge .Wins 4}}bg-yellow-100 text-yellow-800
-                                    {{else if ge .Wins 2}}bg-orange-100 text-orange-800
-                                    {{else}}bg-red-100 text-red-800{{end}}">
+                                    {{if ge .Wins 8}}bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
+                                    {{else if ge .Wins 6}}bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200
+                                    {{else if ge .Wins 4}}bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
+                                    {{else if ge .Wins 2}}bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
+                                    {{else}}bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200{{end}}">
                                     {{.Record}}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900 dark:text-dark-text">
                                 {{printf "%.3f" .SoS}}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900 dark:text-dark-text">
                                 {{printf "%.3f" .SoV}}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900 dark:text-dark-text">
                                 {{if ge .Wins 8}}
-                                    <span class="text-green-600 font-medium">Dominant</span>
+                                    <span class="text-green-600 dark:text-green-400 font-medium">Dominant</span>
                                 {{else if ge .Wins 6}}
-                                    <span class="text-blue-600 font-medium">Strong</span>
+                                    <span class="text-blue-600 dark:text-blue-400 font-medium">Strong</span>
                                 {{else if ge .Wins 4}}
-                                    <span class="text-yellow-600 font-medium">Competitive</span>
+                                    <span class="text-yellow-600 dark:text-yellow-400 font-medium">Competitive</span>
                                 {{else if ge .Wins 2}}
-                                    <span class="text-orange-600 font-medium">Struggling</span>
+                                    <span class="text-orange-600 dark:text-orange-400 font-medium">Struggling</span>
                                 {{else if gt .Wins 0}}
-                                    <span class="text-red-600 font-medium">Poor</span>
+                                    <span class="text-red-600 dark:text-red-400 font-medium">Poor</span>
                                 {{else}}
-                                    <span class="text-red-600 font-medium">Winless</span>
+                                    <span class="text-red-600 dark:text-red-400 font-medium">Winless</span>
                                 {{end}}
                             </td>
                         </tr>
@@ -74,7 +74,7 @@
         {{end}}
     </div>
 {{else}}
-    <div class="text-center text-gray-500 py-8">
+    <div class="text-center text-gray-500 dark:text-gray-400 py-8">
         <div class="text-4xl mb-4">🏆</div>
         <p class="text-lg">No standings data available</p>
         <p class="text-sm">Check back later for updates</p>
