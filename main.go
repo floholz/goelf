@@ -330,10 +330,34 @@ func getSchedule(c *gin.Context) {
 
 type TeamStanding struct {
 	TeamName string
+	Division string
 	Wins     int
 	Losses   int
 	Record   string
 	Position int
+	SoS      float64 // Strength of Schedule
+	SoV      float64 // Strength of Victory
+}
+
+// Division mapping
+var teamDivisions = map[string]string{
+	"Vienna Vikings":       "EAST",
+	"Prague Lions":         "EAST",
+	"Wroclaw Panthers":     "EAST",
+	"Fehérvár Enthroners":  "EAST",
+	"Fehervar Enthroners":  "EAST", // Alternative spelling without accent
+	"Stuttgart Surge":      "WEST",
+	"Paris Musketeers":     "WEST",
+	"Frankfurt Galaxy":     "WEST",
+	"Cologne Centurions":   "WEST",
+	"Nordic Storm":         "NORTH",
+	"Rhein Fire":           "NORTH",
+	"Berlin Thunder":       "NORTH",
+	"Hamburg Sea Devils":   "NORTH",
+	"Munich Ravens":        "SOUTH",
+	"Madrid Bravos":        "SOUTH",
+	"Raiders Tirol":        "SOUTH",
+	"Helvetic Mercenaries": "SOUTH",
 }
 
 func getScoreboard(c *gin.Context) {
@@ -344,6 +368,14 @@ func getScoreboard(c *gin.Context) {
 		return
 	}
 	defer rows.Close()
+
+	// Store all games for SoS/SoV calculations
+	var games []struct {
+		homeTeam  string
+		awayTeam  string
+		homeScore int
+		awayScore int
+	}
 
 	// Calculate standings from schedule data
 	teamStats := make(map[string]struct {
@@ -362,6 +394,14 @@ func getScoreboard(c *gin.Context) {
 
 		// Only count games that have been played (scores > 0)
 		if homeScore > 0 || awayScore > 0 {
+			// Store game for SoS/SoV calculations
+			games = append(games, struct {
+				homeTeam  string
+				awayTeam  string
+				homeScore int
+				awayScore int
+			}{homeTeam, awayTeam, homeScore, awayScore})
+
 			if homeScore > awayScore {
 				teamStats[homeTeam] = struct {
 					wins   int
@@ -384,28 +424,116 @@ func getScoreboard(c *gin.Context) {
 		}
 	}
 
-	// Convert to standings slice and sort by wins
-	var standings []TeamStanding
+	// Calculate SoS and SoV for each team
+	teamSoS := make(map[string]float64)
+	teamSoV := make(map[string]float64)
+
+	for teamName := range teamStats {
+		// Calculate SoS (Strength of Schedule)
+		opponentWins := 0
+		opponentLosses := 0
+
+		// Calculate SoV (Strength of Victory)
+		defeatedOpponentWins := 0
+		defeatedOpponentLosses := 0
+
+		for _, game := range games {
+			// Check if this team played in this game
+			if game.homeTeam == teamName {
+				// Team was home team
+				opponent := game.awayTeam
+				opponentWins += teamStats[opponent].wins
+				opponentLosses += teamStats[opponent].losses
+
+				// If team won, add opponent stats to SoV
+				if game.homeScore > game.awayScore {
+					defeatedOpponentWins += teamStats[opponent].wins
+					defeatedOpponentLosses += teamStats[opponent].losses
+				}
+			} else if game.awayTeam == teamName {
+				// Team was away team
+				opponent := game.homeTeam
+				opponentWins += teamStats[opponent].wins
+				opponentLosses += teamStats[opponent].losses
+
+				// If team won, add opponent stats to SoV
+				if game.awayScore > game.homeScore {
+					defeatedOpponentWins += teamStats[opponent].wins
+					defeatedOpponentLosses += teamStats[opponent].losses
+				}
+			}
+		}
+
+		// Calculate SoS
+		totalOpponentGames := opponentWins + opponentLosses
+		if totalOpponentGames > 0 {
+			teamSoS[teamName] = float64(opponentWins) / float64(totalOpponentGames)
+		} else {
+			teamSoS[teamName] = 0.0
+		}
+
+		// Calculate SoV
+		totalDefeatedOpponentGames := defeatedOpponentWins + defeatedOpponentLosses
+		if totalDefeatedOpponentGames > 0 {
+			teamSoV[teamName] = float64(defeatedOpponentWins) / float64(totalDefeatedOpponentGames)
+		} else {
+			teamSoV[teamName] = 0.0
+		}
+	}
+
+	// Convert to standings slice and organize by divisions
+	divisionStandings := make(map[string][]TeamStanding)
+
 	for teamName, stats := range teamStats {
-		standings = append(standings, TeamStanding{
+		division := teamDivisions[teamName]
+		if division == "" {
+			division = "UNKNOWN" // Fallback for any unmapped teams
+		}
+
+		standing := TeamStanding{
 			TeamName: teamName,
+			Division: division,
 			Wins:     stats.wins,
 			Losses:   stats.losses,
 			Record:   fmt.Sprintf("%d-%d", stats.wins, stats.losses),
-		})
+			SoS:      teamSoS[teamName],
+			SoV:      teamSoV[teamName],
+		}
+
+		divisionStandings[division] = append(divisionStandings[division], standing)
 	}
 
-	// Sort by wins (descending), then by losses (ascending)
-	sort.Slice(standings, func(i, j int) bool {
-		if standings[i].Wins != standings[j].Wins {
-			return standings[i].Wins > standings[j].Wins
-		}
-		return standings[i].Losses < standings[j].Losses
-	})
+	// Sort each division by wins (descending), then by losses (ascending)
+	for division := range divisionStandings {
+		sort.Slice(divisionStandings[division], func(i, j int) bool {
+			if divisionStandings[division][i].Wins != divisionStandings[division][j].Wins {
+				return divisionStandings[division][i].Wins > divisionStandings[division][j].Wins
+			}
+			return divisionStandings[division][i].Losses < divisionStandings[division][j].Losses
+		})
 
-	// Add position numbers
-	for i := range standings {
-		standings[i].Position = i + 1
+		// Add position numbers within each division
+		for i := range divisionStandings[division] {
+			divisionStandings[division][i].Position = i + 1
+		}
+	}
+
+	// Create final standings structure
+	type DivisionData struct {
+		Division string
+		Teams    []TeamStanding
+	}
+
+	var standings []DivisionData
+	divisions := []string{"EAST", "WEST", "NORTH", "SOUTH"}
+
+	for _, division := range divisions {
+		if teams, exists := divisionStandings[division]; exists {
+			standings = append(standings, DivisionData{
+				Division: division,
+				Teams:    teams,
+			})
+		}
 	}
 
 	// Check if request is from HTMX (has HX-Request header)
