@@ -418,15 +418,21 @@ func getSchedule(c *gin.Context) {
 }
 
 type TeamStanding struct {
-	TeamName string
-	Division string
-	Wins     int
-	Losses   int
-	Record   string
-	Position int
-	SoS      float64 // Strength of Schedule
-	SoV      float64 // Strength of Victory
-	Logo     string  // Team logo filename
+	TeamName      string
+	Division      string
+	Wins          int
+	Losses        int
+	Record        string
+	Position      int
+	SoS           float64 // Strength of Schedule
+	SoV           float64 // Strength of Victory
+	Logo          string  // Team logo filename
+	PointsFor     int     // PF - Points scored
+	PointsAgainst int     // PA - Points allowed
+	PointDiff     int     // PD - Point differential
+	DivWins       int     // Division wins
+	DivLosses     int     // Division losses
+	DivRecord     string  // Division record
 }
 
 // Division mapping
@@ -490,8 +496,12 @@ func getScoreboard(c *gin.Context) {
 
 	// Calculate standings from schedule data
 	teamStats := make(map[string]struct {
-		wins   int
-		losses int
+		wins          int
+		losses        int
+		pointsFor     int
+		pointsAgainst int
+		divWins       int
+		divLosses     int
 	})
 
 	for rows.Next() {
@@ -514,23 +524,83 @@ func getScoreboard(c *gin.Context) {
 			}{homeTeam, awayTeam, homeScore, awayScore})
 
 			if homeScore > awayScore {
+				// Home team wins
+				homeDivWin := 0
+				awayDivLoss := 0
+				if teamDivisions[homeTeam] == teamDivisions[awayTeam] {
+					homeDivWin = 1
+					awayDivLoss = 1
+				}
+
 				teamStats[homeTeam] = struct {
-					wins   int
-					losses int
-				}{teamStats[homeTeam].wins + 1, teamStats[homeTeam].losses}
+					wins          int
+					losses        int
+					pointsFor     int
+					pointsAgainst int
+					divWins       int
+					divLosses     int
+				}{
+					teamStats[homeTeam].wins + 1,
+					teamStats[homeTeam].losses,
+					teamStats[homeTeam].pointsFor + homeScore,
+					teamStats[homeTeam].pointsAgainst + awayScore,
+					teamStats[homeTeam].divWins + homeDivWin,
+					teamStats[homeTeam].divLosses,
+				}
 				teamStats[awayTeam] = struct {
-					wins   int
-					losses int
-				}{teamStats[awayTeam].wins, teamStats[awayTeam].losses + 1}
+					wins          int
+					losses        int
+					pointsFor     int
+					pointsAgainst int
+					divWins       int
+					divLosses     int
+				}{
+					teamStats[awayTeam].wins,
+					teamStats[awayTeam].losses + 1,
+					teamStats[awayTeam].pointsFor + awayScore,
+					teamStats[awayTeam].pointsAgainst + homeScore,
+					teamStats[awayTeam].divWins,
+					teamStats[awayTeam].divLosses + awayDivLoss,
+				}
 			} else if awayScore > homeScore {
+				// Away team wins
+				awayDivWin := 0
+				homeDivLoss := 0
+				if teamDivisions[homeTeam] == teamDivisions[awayTeam] {
+					awayDivWin = 1
+					homeDivLoss = 1
+				}
+
 				teamStats[awayTeam] = struct {
-					wins   int
-					losses int
-				}{teamStats[awayTeam].wins + 1, teamStats[awayTeam].losses}
+					wins          int
+					losses        int
+					pointsFor     int
+					pointsAgainst int
+					divWins       int
+					divLosses     int
+				}{
+					teamStats[awayTeam].wins + 1,
+					teamStats[awayTeam].losses,
+					teamStats[awayTeam].pointsFor + awayScore,
+					teamStats[awayTeam].pointsAgainst + homeScore,
+					teamStats[awayTeam].divWins + awayDivWin,
+					teamStats[awayTeam].divLosses,
+				}
 				teamStats[homeTeam] = struct {
-					wins   int
-					losses int
-				}{teamStats[homeTeam].wins, teamStats[homeTeam].losses + 1}
+					wins          int
+					losses        int
+					pointsFor     int
+					pointsAgainst int
+					divWins       int
+					divLosses     int
+				}{
+					teamStats[homeTeam].wins,
+					teamStats[homeTeam].losses + 1,
+					teamStats[homeTeam].pointsFor + homeScore,
+					teamStats[homeTeam].pointsAgainst + awayScore,
+					teamStats[homeTeam].divWins,
+					teamStats[homeTeam].divLosses + homeDivLoss,
+				}
 			}
 		}
 	}
@@ -602,14 +672,20 @@ func getScoreboard(c *gin.Context) {
 		}
 
 		standing := TeamStanding{
-			TeamName: teamName,
-			Division: division,
-			Wins:     stats.wins,
-			Losses:   stats.losses,
-			Record:   fmt.Sprintf("%d-%d", stats.wins, stats.losses),
-			SoS:      teamSoS[teamName],
-			SoV:      teamSoV[teamName],
-			Logo:     teamLogos[teamName],
+			TeamName:      teamName,
+			Division:      division,
+			Wins:          stats.wins,
+			Losses:        stats.losses,
+			Record:        fmt.Sprintf("%d-%d", stats.wins, stats.losses),
+			SoS:           teamSoS[teamName],
+			SoV:           teamSoV[teamName],
+			Logo:          teamLogos[teamName],
+			PointsFor:     stats.pointsFor,
+			PointsAgainst: stats.pointsAgainst,
+			PointDiff:     stats.pointsFor - stats.pointsAgainst,
+			DivWins:       stats.divWins,
+			DivLosses:     stats.divLosses,
+			DivRecord:     fmt.Sprintf("%d-%d", stats.divWins, stats.divLosses),
 		}
 
 		divisionStandings[division] = append(divisionStandings[division], standing)
