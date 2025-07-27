@@ -1,4 +1,4 @@
-module goelf
+module github.com/floholz/goelf
 
 go 1.21
 

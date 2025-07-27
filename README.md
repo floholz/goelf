@@ -30,6 +30,8 @@ The application fetches data from:
 
 ## Installation
 
+### Option 1: Local Development
+
 1. Clone the repository:
 ```bash
 git clone <repository-url>
@@ -48,6 +50,43 @@ go run main.go
 
 The server will start on `http://localhost:8080`
 
+### Option 2: Docker Deployment
+
+#### Using Docker Compose (Recommended)
+```bash
+# Pull and run the latest image
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the application
+docker-compose down
+```
+
+#### Using Docker directly
+```bash
+# Pull the image
+docker pull ghcr.io/floholz/goelf:latest
+
+# Run the container
+docker run -d \
+  --name goelf \
+  -p 8080:8080 \
+  -v $(pwd)/database:/app/database \
+  --restart unless-stopped \
+  ghcr.io/floholz/goelf:latest
+```
+
+### Production Deployment
+
+The application is automatically built and pushed to GitHub Container Registry (ghcr.io) on every push to main/master branch and on version tags.
+
+**Available tags:**
+- `ghcr.io/floholz/goelf:latest` - Latest stable version
+- `ghcr.io/floholz/goelf:v1.0.0` - Specific version tags
+- `ghcr.io/floholz/goelf:main` - Latest from main branch
+
 ## Project Structure
 
 ```
@@ -56,6 +95,11 @@ goelf/
 ├── go.mod               # Go module file
 ├── go.sum               # Go dependencies checksum
 ├── README.md            # This file
+├── Dockerfile           # Docker container definition
+├── docker-compose.yml   # Docker Compose configuration
+├── .dockerignore        # Docker build exclusions
+├── .github/workflows/   # GitHub Actions workflows
+│   └── docker.yml       # Docker build and push workflow
 ├── templates/           # HTML templates
 │   ├── index.html       # Main page template
 │   ├── scoreboard.html  # Scoreboard display template

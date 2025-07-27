@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  goelf:
+    image: ghcr.io/floholz/goelf:latest
+    container_name: goelf
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./database:/app/database
+    environment:
+      - GIN_MODE=release
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s 
