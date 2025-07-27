@@ -1,0 +1,96 @@
+{
+  "name": "GoELF - European League Football",
+  "short_name": "GoELF",
+  "description": "European League Football App - Live scores, standings, and match schedules",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["sports", "entertainment"],
+  "icons": [
+    {
+      "src": "/assets/logos/goelf-logo-maskable-16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/logos/goelf-logo-maskable-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/logos/goelf-logo-maskable-48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/logos/goelf-logo-maskable-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/logos/goelf-logo-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/screenshots/sc-standings-desktop.png",
+      "sizes": "2544x1256",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Standings view on desktop"
+    },
+    {
+      "src": "/assets/screenshots/sc-schedule-desktop.png",
+      "sizes": "2544x1256",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Schedule view on desktop"
+    },
+    {
+      "src": "/assets/screenshots/sc-playoffs-desktop.png",
+      "sizes": "2544x1256",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Playoffs view on desktop"
+    },
+    {
+      "src": "/assets/screenshots/sc-standings-mobile.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Standings view on mobile"
+    },
+    {
+      "src": "/assets/screenshots/sc-schedule_finished-mobile.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Finished matches on mobile"
+    },
+    {
+      "src": "/assets/screenshots/sc-schedule_upcoming-mobile.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Upcoming matches on mobile"
+    },
+    {
+      "src": "/assets/screenshots/sc-playoffs-mobile.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Playoffs view on mobile"
+    }
+  ]
+} 
