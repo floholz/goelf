@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">European League Football</h1>
+            <p class="text-gray-600">Live scores and upcoming matches</p>
+        </header>
+
+        <!-- Refresh Button -->
+        <div class="text-center mb-6">
+            <button 
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                hx-get="/api/refresh"
+                hx-target="#refresh-status"
+                hx-swap="innerHTML">
+                Refresh Data
+            </button>
+            <div id="refresh-status" class="mt-2 text-sm text-gray-600"></div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex justify-center mb-8">
+            <div class="bg-white rounded-lg shadow p-1">
+                <button 
+                    class="px-4 py-2 rounded-md transition-colors"
+                    hx-get="/api/scoreboard"
+                    hx-target="#content"
+                    hx-swap="innerHTML"
+                    hx-trigger="click"
+                    onclick="setActiveTab(this, 'scoreboard')"
+                    id="scoreboard-tab">
+                    Standings
+                </button>
+                <button 
+                    class="px-4 py-2 rounded-md transition-colors"
+                    hx-get="/api/schedule"
+                    hx-target="#content"
+                    hx-swap="innerHTML"
+                    hx-trigger="click"
+                    onclick="setActiveTab(this, 'schedule')"
+                    id="schedule-tab">
+                    Upcoming Matches
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div id="content" class="bg-white rounded-lg shadow-lg p-6">
+            <div class="text-center text-gray-500">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                <p class="mt-2">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Auto-refresh indicator -->
+        <div class="text-center mt-6 text-sm text-gray-500">
+            <span id="last-update">Data refreshes automatically every 5 minutes</span>
+        </div>
+    </div>
+
+    <script>
+        // Set active tab styling
+        function setActiveTab(button, tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('#scoreboard-tab, #schedule-tab').forEach(tab => {
+                tab.classList.remove('bg-blue-500', 'text-white');
+                tab.classList.add('text-gray-600', 'hover:bg-gray-100');
+            });
+            
+            // Add active class to clicked tab
+            button.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            button.classList.add('bg-blue-500', 'text-white');
+        }
+
+        // Load scoreboard by default
+        document.addEventListener('DOMContentLoaded', function() {
+            htmx.ajax('GET', '/api/scoreboard', '#content');
+            setActiveTab(document.getElementById('scoreboard-tab'), 'scoreboard');
+        });
+
+        // Update last refresh time
+        htmx.on('htmx:afterRequest', function(evt) {
+            if (evt.detail.xhr.status === 200) {
+                const now = new Date().toLocaleTimeString();
+                document.getElementById('last-update').textContent = `Last updated: ${now}`;
+            }
+        });
+    </script>
+</body>
+</html> 
