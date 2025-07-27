@@ -36,6 +36,11 @@ type GameWeek struct {
 	Matches []Schedule
 }
 
+type ScheduleData struct {
+	FinishedMatches []GameWeek
+	UpcomingMatches []GameWeek
+}
+
 type Scoreboard struct {
 	StatcrewID string `json:"statcrewID"`
 	HomeScore  string `json:"homeScore"`
@@ -345,32 +350,70 @@ func getSchedule(c *gin.Context) {
 		schedules = append(schedules, s)
 	}
 
-	// Group matches by game week
-	gameWeeks := make(map[int][]Schedule)
+	// Separate finished and upcoming matches
+	var finishedMatches []Schedule
+	var upcomingMatches []Schedule
+
 	for _, match := range schedules {
-		gameWeeks[match.GameWeek] = append(gameWeeks[match.GameWeek], match)
+		if match.HomeScore > 0 || match.AwayScore > 0 {
+			finishedMatches = append(finishedMatches, match)
+		} else {
+			upcomingMatches = append(upcomingMatches, match)
+		}
 	}
 
-	// Convert to sorted slice
-	var sortedGameWeeks []GameWeek
-	for week, matches := range gameWeeks {
-		sortedGameWeeks = append(sortedGameWeeks, GameWeek{Week: week, Matches: matches})
+	// Group finished matches by game week
+	finishedGameWeeks := make(map[int][]Schedule)
+	for _, match := range finishedMatches {
+		finishedGameWeeks[match.GameWeek] = append(finishedGameWeeks[match.GameWeek], match)
 	}
 
-	// Sort by week number
-	for i := 0; i < len(sortedGameWeeks)-1; i++ {
-		for j := i + 1; j < len(sortedGameWeeks); j++ {
-			if sortedGameWeeks[i].Week > sortedGameWeeks[j].Week {
-				sortedGameWeeks[i], sortedGameWeeks[j] = sortedGameWeeks[j], sortedGameWeeks[i]
+	// Group upcoming matches by game week
+	upcomingGameWeeks := make(map[int][]Schedule)
+	for _, match := range upcomingMatches {
+		upcomingGameWeeks[match.GameWeek] = append(upcomingGameWeeks[match.GameWeek], match)
+	}
+
+	// Convert to sorted slices
+	var sortedFinishedWeeks []GameWeek
+	for week, matches := range finishedGameWeeks {
+		sortedFinishedWeeks = append(sortedFinishedWeeks, GameWeek{Week: week, Matches: matches})
+	}
+
+	var sortedUpcomingWeeks []GameWeek
+	for week, matches := range upcomingGameWeeks {
+		sortedUpcomingWeeks = append(sortedUpcomingWeeks, GameWeek{Week: week, Matches: matches})
+	}
+
+	// Sort finished matches by week (latest to oldest)
+	for i := 0; i < len(sortedFinishedWeeks)-1; i++ {
+		for j := i + 1; j < len(sortedFinishedWeeks); j++ {
+			if sortedFinishedWeeks[i].Week < sortedFinishedWeeks[j].Week {
+				sortedFinishedWeeks[i], sortedFinishedWeeks[j] = sortedFinishedWeeks[j], sortedFinishedWeeks[i]
 			}
 		}
 	}
 
+	// Sort upcoming matches by week (oldest to newest)
+	for i := 0; i < len(sortedUpcomingWeeks)-1; i++ {
+		for j := i + 1; j < len(sortedUpcomingWeeks); j++ {
+			if sortedUpcomingWeeks[i].Week > sortedUpcomingWeeks[j].Week {
+				sortedUpcomingWeeks[i], sortedUpcomingWeeks[j] = sortedUpcomingWeeks[j], sortedUpcomingWeeks[i]
+			}
+		}
+	}
+
+	// Create schedule data structure
+	scheduleData := ScheduleData{
+		FinishedMatches: sortedFinishedWeeks,
+		UpcomingMatches: sortedUpcomingWeeks,
+	}
+
 	// Check if request is from HTMX (has HX-Request header)
 	if c.GetHeader("HX-Request") == "true" {
-		c.HTML(http.StatusOK, "schedule.html", sortedGameWeeks)
+		c.HTML(http.StatusOK, "schedule.html", scheduleData)
 	} else {
-		c.JSON(http.StatusOK, sortedGameWeeks)
+		c.JSON(http.StatusOK, scheduleData)
 	}
 }
 

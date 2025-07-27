@@ -1,9 +1,15 @@
-{{if .}}
-    <div class="space-y-8">
-        {{range .}}
-        <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-sm">
-            <div class="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-dark-border">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-dark-text">Week {{.Week}}</h2>
+<!-- Finished Matches Section -->
+{{if .FinishedMatches}}
+<div class="mb-8" data-section="finished">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-dark-text mb-6 flex items-center">
+        <span class="mr-3">🏆</span>
+        Finished Matches
+    </h2>
+    <div class="space-y-6">
+        {{range .FinishedMatches}}
+        <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-sm" data-section="finished" data-week="{{.Week}}">
+            <div class="bg-green-50 dark:bg-green-900 px-6 py-3 border-b border-gray-200 dark:border-dark-border">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-dark-text">Week {{.Week}}</h3>
             </div>
             <div class="p-4 space-y-4">
                 {{range .Matches}}
@@ -18,11 +24,60 @@
                                     <span class="font-semibold text-lg text-gray-900 dark:text-dark-text text-right">{{.HomeTeam}}</span>
                                 </div>
                                 <div class="flex flex-col items-center justify-center">
-                                    {{if or (gt .HomeScore 0) (gt .AwayScore 0)}}
                                     <div class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                                         {{.HomeScore}} - {{.AwayScore}}
                                     </div>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Final</span>
+                                </div>
+                                <div class="flex items-center justify-start">
+                                    <span class="font-semibold text-lg text-gray-900 dark:text-dark-text text-left">{{.AwayTeam}}</span>
+                                    {{if .AwayLogo}}
+                                    <img src="/assets/teams/{{.AwayLogo}}" alt="{{.AwayTeam}} Logo" class="w-8 h-8 ml-3 rounded-full">
                                     {{end}}
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">{{.Location}}</div>
+                        </div>
+                        <div class="ml-6 text-right">
+                            <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">{{.Date}}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{.Time}}</div>
+                        </div>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+        </div>
+        {{end}}
+    </div>
+</div>
+{{end}}
+
+<!-- Upcoming Matches Section -->
+{{if .UpcomingMatches}}
+<div class="mb-8" data-section="upcoming">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-dark-text mb-6 flex items-center">
+        <span class="mr-3">📅</span>
+        Upcoming Matches
+    </h2>
+    <div class="space-y-6">
+        {{range .UpcomingMatches}}
+        <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-sm" data-section="upcoming" data-week="{{.Week}}">
+            <div class="bg-blue-50 dark:bg-blue-900 px-6 py-3 border-b border-gray-200 dark:border-dark-border">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-dark-text">Week {{.Week}}</h3>
+            </div>
+            <div class="p-4 space-y-4">
+                {{range .Matches}}
+                <div class="border border-gray-200 dark:border-dark-border rounded-lg p-4 hover:shadow-md transition-shadow fade-in bg-white dark:bg-dark-card">
+                    <div class="flex justify-between items-center">
+                        <div class="flex-1">
+                            <div class="grid grid-cols-3 items-center mb-2">
+                                <div class="flex items-center justify-end">
+                                    {{if .HomeLogo}}
+                                    <img src="/assets/teams/{{.HomeLogo}}" alt="{{.HomeTeam}} Logo" class="w-8 h-8 mr-3 rounded-full">
+                                    {{end}}
+                                    <span class="font-semibold text-lg text-gray-900 dark:text-dark-text text-right">{{.HomeTeam}}</span>
+                                </div>
+                                <div class="flex flex-col items-center justify-center">
                                     <span class="text-sm text-gray-500 dark:text-gray-400">vs</span>
                                 </div>
                                 <div class="flex items-center justify-start">
@@ -45,10 +100,117 @@
         </div>
         {{end}}
     </div>
-{{else}}
-    <div class="text-center text-gray-500 dark:text-gray-400 py-8">
-        <div class="text-4xl mb-4">📅</div>
-        <p class="text-lg">No upcoming matches scheduled</p>
-        <p class="text-sm">Check back later for updates</p>
-    </div>
+</div>
+{{end}}
+
+<!-- No Matches Message -->
+{{if and (not .FinishedMatches) (not .UpcomingMatches)}}
+<div class="text-center text-gray-500 dark:text-gray-400 py-8">
+    <div class="text-4xl mb-4">📅</div>
+    <p class="text-lg">No matches found</p>
+    <p class="text-sm">Check back later for updates</p>
+</div>
+{{end}}
+
+<!-- Floating Navigation Button -->
+{{if or .FinishedMatches .UpcomingMatches}}
+<div id="floating-nav" class="fixed bottom-6 right-6 z-50">
+    <button 
+        id="nav-button"
+        class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 transform hover:scale-110"
+        onclick="navigateToNextSection()"
+        title="Navigate to next section">
+        <svg id="nav-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+    </button>
+</div>
+
+<script>
+// Navigation data from data attributes
+const finishedWeeks = [];
+const upcomingWeeks = [];
+
+{{range .FinishedMatches}}
+finishedWeeks.push({{.Week}});
+{{end}}
+
+{{range .UpcomingMatches}}
+upcomingWeeks.push({{.Week}});
+{{end}}
+
+const navigationData = {
+    finishedWeeks: finishedWeeks,
+    upcomingWeeks: upcomingWeeks
+};
+
+function isUpcomingSectionInView() {
+    const upcomingSection = document.querySelector('div[data-section="upcoming"]');
+    if (!upcomingSection) return false;
+    return upcomingSection.getBoundingClientRect().top - document.documentElement.clientHeight < 0;
+}
+
+function navigateToNextSection() {
+    // Check if upcoming section is in view
+    if (isUpcomingSectionInView()) {
+        // If upcoming section is visible, go to latest finished week
+        if (navigationData.finishedWeeks.length > 0) {
+            const latestWeek = navigationData.finishedWeeks[0]; // Latest finished week
+            scrollToWeek('finished', latestWeek);
+        }
+    } else {
+        // If upcoming section is not visible, go to upcoming section
+        if (navigationData.upcomingWeeks.length > 0) {
+            const nextWeek = navigationData.upcomingWeeks[0]; // First upcoming week
+            scrollToWeek('upcoming', nextWeek);
+        }
+    }
+}
+
+function scrollToWeek(section, week) {
+    const weekElement = document.querySelector(`[data-section="${section}"][data-week="${week}"]`);
+    if (weekElement) {
+        weekElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+        
+        // Add highlight effect
+        weekElement.classList.add('ring-4', 'ring-blue-300', 'ring-opacity-50');
+        setTimeout(() => {
+            weekElement.classList.remove('ring-4', 'ring-blue-300', 'ring-opacity-50');
+        }, 2000);
+    }
+}
+
+function isElementInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+// Update button icon based on current section
+function updateButtonIcon() {
+    const button = document.getElementById('nav-button');
+    const icon = document.getElementById('nav-icon');
+    
+    if (isUpcomingSectionInView()) {
+        // Show up arrow (go to finished)
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>';
+        button.title = 'Go to latest finished matches';
+    } else {
+        // Show down arrow (go to upcoming)
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>';
+        button.title = 'Go to upcoming matches';
+    }
+}
+
+// Update icon on scroll
+window.addEventListener('scroll', updateButtonIcon);
+document.addEventListener('DOMContentLoaded', updateButtonIcon);
+</script>
 {{end}} 
