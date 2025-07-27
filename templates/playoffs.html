@@ -1,49 +1,49 @@
 {{if .}}
-<div class="max-w-6xl mx-auto p-6">
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-dark-text mb-2">ELF Playoffs</h1>
-        <p class="text-gray-600 dark:text-gray-400">Tournament Bracket - Current Standings</p>
+<div class="max-w-6xl mx-auto p-4 md:p-6">
+    <div class="text-center mb-6 md:mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-dark-text mb-2">ELF Playoffs</h1>
+        <p class="text-sm md:text-base text-gray-600 dark:text-gray-400">Tournament Bracket - Current Standings</p>
     </div>
 
     <!-- Playoff Bracket -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
         
         <!-- Wildcard Round -->
-        <div class="space-y-6">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-dark-text text-center">Wildcard Round</h2>
+        <div class="space-y-4 md:space-y-6">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800 dark:text-dark-text text-center">Wildcard Round</h2>
             {{range .WildcardRound}}
-            <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-4 shadow-sm">
+            <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-3 md:p-4 shadow-sm">
                 <div class="text-center mb-2">
                     <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Seed {{.Seed1}} vs Seed {{.Seed2}}</span>
                 </div>
                 <div class="space-y-2">
                     <div class="flex justify-between items-center p-2 {{if eq .Winner .Team1}}bg-green-50 dark:bg-green-900 border-l-4 border-green-500{{else}}bg-gray-50 dark:bg-gray-700{{end}}">
-                        <div class="flex items-center">
+                        <div class="flex items-center min-w-0">
                             {{if .Logo1}}
-                            <img src="/assets/teams/{{.Logo1}}" alt="{{.Team1}} Logo" class="w-6 h-6 mr-2 rounded-full">
+                            <img src="/assets/teams/{{.Logo1}}" alt="{{.Team1}} Logo" class="w-5 h-5 md:w-6 md:h-6 mr-2 rounded-full flex-shrink-0">
                             {{end}}
-                            <span class="font-medium text-gray-900 dark:text-dark-text">{{.Team1}}</span>
+                            <span class="font-medium text-sm md:text-base text-gray-900 dark:text-dark-text truncate">{{.Team1}}</span>
                         </div>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">Seed {{.Seed1}}</span>
+                        <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">Seed {{.Seed1}}</span>
                     </div>
                     <div class="text-center text-gray-400 dark:text-gray-500 text-sm">vs</div>
                     <div class="flex justify-between items-center p-2 {{if eq .Winner .Team2}}bg-green-50 dark:bg-green-900 border-l-4 border-green-500{{else}}bg-gray-50 dark:bg-gray-700{{end}}">
-                        <div class="flex items-center">
+                        <div class="flex items-center min-w-0">
                             {{if .Logo2}}
-                            <img src="/assets/teams/{{.Logo2}}" alt="{{.Team2}} Logo" class="w-6 h-6 mr-2 rounded-full">
+                            <img src="/assets/teams/{{.Logo2}}" alt="{{.Team2}} Logo" class="w-5 h-5 md:w-6 md:h-6 mr-2 rounded-full flex-shrink-0">
                             {{end}}
-                            <span class="font-medium text-gray-900 dark:text-dark-text">{{.Team2}}</span>
+                            <span class="font-medium text-sm md:text-base text-gray-900 dark:text-dark-text truncate">{{.Team2}}</span>
                         </div>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">Seed {{.Seed2}}</span>
+                        <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">Seed {{.Seed2}}</span>
                     </div>
                 </div>
                 {{if .IsPlayed}}
                 <div class="mt-3 text-center">
-                    <span class="text-sm font-medium text-green-600 dark:text-green-400">Winner: {{.Winner}}</span>
+                    <span class="text-xs md:text-sm font-medium text-green-600 dark:text-green-400">Winner: {{.Winner}}</span>
                 </div>
                 {{else}}
                 <div class="mt-3 text-center">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Not played yet</span>
+                    <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400">Not played yet</span>
                 </div>
                 {{end}}
             </div>
@@ -51,41 +51,41 @@
         </div>
 
         <!-- Semi-Finals -->
-        <div class="space-y-6">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-dark-text text-center">Semi-Finals</h2>
+        <div class="space-y-4 md:space-y-6">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800 dark:text-dark-text text-center">Semi-Finals</h2>
             {{range .SemiFinals}}
-            <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-4 shadow-sm">
+            <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-3 md:p-4 shadow-sm">
                 <div class="text-center mb-2">
                     <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Seed {{.Seed1}} vs TBD</span>
                 </div>
                 <div class="space-y-2">
                     <div class="flex justify-between items-center p-2 {{if eq .Winner .Team1}}bg-green-50 dark:bg-green-900 border-l-4 border-green-500{{else}}bg-blue-50 dark:bg-blue-900{{end}}">
-                        <div class="flex items-center">
+                        <div class="flex items-center min-w-0">
                             {{if .Logo1}}
-                            <img src="/assets/teams/{{.Logo1}}" alt="{{.Team1}} Logo" class="w-6 h-6 mr-2 rounded-full">
+                            <img src="/assets/teams/{{.Logo1}}" alt="{{.Team1}} Logo" class="w-5 h-5 md:w-6 md:h-6 mr-2 rounded-full flex-shrink-0">
                             {{end}}
-                            <span class="font-medium text-gray-900 dark:text-dark-text">{{.Team1}}</span>
+                            <span class="font-medium text-sm md:text-base text-gray-900 dark:text-dark-text truncate">{{.Team1}}</span>
                         </div>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">Seed {{.Seed1}}</span>
+                        <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">Seed {{.Seed1}}</span>
                     </div>
                     <div class="text-center text-gray-400 dark:text-gray-500 text-sm">vs</div>
                     <div class="flex justify-between items-center p-2 {{if eq .Winner .Team2}}bg-green-50 dark:bg-green-900 border-l-4 border-green-500{{else}}bg-gray-50 dark:bg-gray-700{{end}}">
-                        <div class="flex items-center">
+                        <div class="flex items-center min-w-0">
                             {{if .Logo2}}
-                            <img src="/assets/teams/{{.Logo2}}" alt="{{.Team2}} Logo" class="w-6 h-6 mr-2 rounded-full">
+                            <img src="/assets/teams/{{.Logo2}}" alt="{{.Team2}} Logo" class="w-5 h-5 md:w-6 md:h-6 mr-2 rounded-full flex-shrink-0">
                             {{end}}
-                            <span class="font-medium text-gray-900 dark:text-dark-text">{{.Team2}}</span>
+                            <span class="font-medium text-sm md:text-base text-gray-900 dark:text-dark-text truncate">{{.Team2}}</span>
                         </div>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">{{if gt .Seed2 0}}Seed {{.Seed2}}{{else}}TBD{{end}}</span>
+                        <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">{{if gt .Seed2 0}}Seed {{.Seed2}}{{else}}TBD{{end}}</span>
                     </div>
                 </div>
                 {{if .IsPlayed}}
                 <div class="mt-3 text-center">
-                    <span class="text-sm font-medium text-green-600 dark:text-green-400">Winner: {{.Winner}}</span>
+                    <span class="text-xs md:text-sm font-medium text-green-600 dark:text-green-400">Winner: {{.Winner}}</span>
                 </div>
                 {{else}}
                 <div class="mt-3 text-center">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Awaiting wildcard results</span>
+                    <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400">Awaiting wildcard results</span>
                 </div>
                 {{end}}
             </div>
@@ -93,30 +93,30 @@
         </div>
 
         <!-- Championship -->
-        <div class="space-y-6">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-dark-text text-center">Championship</h2>
-            <div class="bg-white dark:bg-dark-card border-2 border-yellow-300 dark:border-yellow-600 rounded-lg p-6 shadow-lg">
-                <div class="text-center mb-4">
-                    <span class="text-sm font-medium text-yellow-600 dark:text-yellow-400">ELF CHAMPIONSHIP</span>
+        <div class="space-y-4 md:space-y-6">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800 dark:text-dark-text text-center">Championship</h2>
+            <div class="bg-white dark:bg-dark-card border-2 border-yellow-300 dark:border-yellow-600 rounded-lg p-4 md:p-6 shadow-lg">
+                <div class="text-center mb-3 md:mb-4">
+                    <span class="text-xs md:text-sm font-medium text-yellow-600 dark:text-yellow-400">ELF CHAMPIONSHIP</span>
                 </div>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center p-3 {{if eq .Championship.Winner .Championship.Team1}}bg-green-50 dark:bg-green-900 border-l-4 border-green-500{{else}}bg-gray-50 dark:bg-gray-700{{end}}">
-                        <span class="font-semibold text-lg text-gray-900 dark:text-dark-text">{{.Championship.Team1}}</span>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">TBD</span>
+                        <span class="font-semibold text-base md:text-lg text-gray-900 dark:text-dark-text truncate">{{.Championship.Team1}}</span>
+                        <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">TBD</span>
                     </div>
-                    <div class="text-center text-gray-400 dark:text-gray-500 text-lg font-medium">vs</div>
+                    <div class="text-center text-gray-400 dark:text-gray-500 text-base md:text-lg font-medium">vs</div>
                     <div class="flex justify-between items-center p-3 {{if eq .Championship.Winner .Championship.Team2}}bg-green-50 dark:bg-green-900 border-l-4 border-green-500{{else}}bg-gray-50 dark:bg-gray-700{{end}}">
-                        <span class="font-semibold text-lg text-gray-900 dark:text-dark-text">{{.Championship.Team2}}</span>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">TBD</span>
+                        <span class="font-semibold text-base md:text-lg text-gray-900 dark:text-dark-text truncate">{{.Championship.Team2}}</span>
+                        <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">TBD</span>
                     </div>
                 </div>
                 {{if .Championship.IsPlayed}}
                 <div class="mt-4 text-center">
-                    <span class="text-lg font-bold text-green-600 dark:text-green-400">🏆 CHAMPION: {{.Championship.Winner}}</span>
+                    <span class="text-base md:text-lg font-bold text-green-600 dark:text-green-400">🏆 CHAMPION: {{.Championship.Winner}}</span>
                 </div>
                 {{else}}
                 <div class="mt-4 text-center">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Awaiting semi-final results</span>
+                    <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400">Awaiting semi-final results</span>
                 </div>
                 {{end}}
             </div>
@@ -124,9 +124,9 @@
     </div>
 
     <!-- Playoff Rules -->
-    <div class="mt-12 bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-dark-text mb-4">Playoff Format</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-700 dark:text-gray-300">
+    <div class="mt-8 md:mt-12 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 md:p-6">
+        <h3 class="text-base md:text-lg font-semibold text-gray-800 dark:text-dark-text mb-3 md:mb-4">Playoff Format</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 text-xs md:text-sm text-gray-700 dark:text-gray-300">
             <div>
                 <h4 class="font-medium text-gray-800 dark:text-dark-text mb-2">Qualification</h4>
                 <ul class="space-y-1">

@@ -1,46 +1,46 @@
 <!-- Finished Matches Section -->
 {{if .FinishedMatches}}
 <div class="mb-8" data-section="finished">
-    <h2 class="text-2xl font-bold text-gray-900 dark:text-dark-text mb-6 flex items-center">
-        <span class="mr-3">🏆</span>
+    <h2 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-dark-text mb-4 md:mb-6 flex items-center">
+        <span class="mr-2 md:mr-3">🏆</span>
         Finished Matches
     </h2>
-    <div class="space-y-6">
+    <div class="space-y-4 md:space-y-6">
         {{range .FinishedMatches}}
         <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-sm" data-section="finished" data-week="{{.Week}}">
-            <div class="bg-green-50 dark:bg-green-900 px-6 py-3 border-b border-gray-200 dark:border-dark-border">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-dark-text">Week {{.Week}}</h3>
+            <div class="bg-green-50 dark:bg-green-900 px-4 md:px-6 py-3 border-b border-gray-200 dark:border-dark-border">
+                <h3 class="text-base md:text-lg font-semibold text-gray-900 dark:text-dark-text">Week {{.Week}}</h3>
             </div>
-            <div class="p-4 space-y-4">
+            <div class="p-3 md:p-4 space-y-3 md:space-y-4">
                 {{range .Matches}}
-                <div class="border border-gray-200 dark:border-dark-border rounded-lg p-4 hover:shadow-md transition-shadow fade-in bg-white dark:bg-dark-card">
-                    <div class="flex justify-between items-center">
+                <div class="border border-gray-200 dark:border-dark-border rounded-lg p-3 md:p-4 hover:shadow-md transition-shadow fade-in bg-white dark:bg-dark-card">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-center space-y-3 md:space-y-0">
                         <div class="flex-1">
                             <div class="grid grid-cols-3 items-center mb-2">
                                 <div class="flex items-center justify-end">
                                     {{if .HomeLogo}}
-                                    <img src="/assets/teams/{{.HomeLogo}}" alt="{{.HomeTeam}} Logo" class="w-8 h-8 mr-3 rounded-full">
+                                    <img src="/assets/teams/{{.HomeLogo}}" alt="{{.HomeTeam}} Logo" class="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 rounded-full">
                                     {{end}}
-                                    <span class="font-semibold text-lg text-gray-900 dark:text-dark-text text-right">{{.HomeTeam}}</span>
+                                    <span class="font-semibold text-sm md:text-lg text-gray-900 dark:text-dark-text text-right truncate">{{.HomeTeam}}</span>
                                 </div>
                                 <div class="flex flex-col items-center justify-center">
-                                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                                    <div class="text-lg md:text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                                         {{.HomeScore}} - {{.AwayScore}}
                                     </div>
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Final</span>
+                                    <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400">Final</span>
                                 </div>
                                 <div class="flex items-center justify-start">
-                                    <span class="font-semibold text-lg text-gray-900 dark:text-dark-text text-left">{{.AwayTeam}}</span>
+                                    <span class="font-semibold text-sm md:text-lg text-gray-900 dark:text-dark-text text-left truncate">{{.AwayTeam}}</span>
                                     {{if .AwayLogo}}
-                                    <img src="/assets/teams/{{.AwayLogo}}" alt="{{.AwayTeam}} Logo" class="w-8 h-8 ml-3 rounded-full">
+                                    <img src="/assets/teams/{{.AwayLogo}}" alt="{{.AwayTeam}} Logo" class="w-6 h-6 md:w-8 md:h-8 ml-2 md:ml-3 rounded-full">
                                     {{end}}
                                 </div>
                             </div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">{{.Location}}</div>
+                            <div class="text-xs md:text-sm text-gray-600 dark:text-gray-400">{{.Location}}</div>
                         </div>
-                        <div class="ml-6 text-right">
-                            <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">{{.Date}}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">{{.Time}}</div>
+                        <div class="md:ml-6 text-center md:text-right">
+                            <div class="text-base md:text-lg font-semibold text-blue-600 dark:text-blue-400">{{.Date}}</div>
+                            <div class="text-xs md:text-sm text-gray-500 dark:text-gray-400">{{.Time}}</div>
                         </div>
                     </div>
                 </div>
@@ -55,43 +55,43 @@
 <!-- Upcoming Matches Section -->
 {{if .UpcomingMatches}}
 <div class="mb-8" data-section="upcoming">
-    <h2 class="text-2xl font-bold text-gray-900 dark:text-dark-text mb-6 flex items-center">
-        <span class="mr-3">📅</span>
+    <h2 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-dark-text mb-4 md:mb-6 flex items-center">
+        <span class="mr-2 md:mr-3">📅</span>
         Upcoming Matches
     </h2>
-    <div class="space-y-6">
+    <div class="space-y-4 md:space-y-6">
         {{range .UpcomingMatches}}
         <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-sm" data-section="upcoming" data-week="{{.Week}}">
-            <div class="bg-blue-50 dark:bg-blue-900 px-6 py-3 border-b border-gray-200 dark:border-dark-border">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-dark-text">Week {{.Week}}</h3>
+            <div class="bg-blue-50 dark:bg-blue-900 px-4 md:px-6 py-3 border-b border-gray-200 dark:border-dark-border">
+                <h3 class="text-base md:text-lg font-semibold text-gray-900 dark:text-dark-text">Week {{.Week}}</h3>
             </div>
-            <div class="p-4 space-y-4">
+            <div class="p-3 md:p-4 space-y-3 md:space-y-4">
                 {{range .Matches}}
-                <div class="border border-gray-200 dark:border-dark-border rounded-lg p-4 hover:shadow-md transition-shadow fade-in bg-white dark:bg-dark-card">
-                    <div class="flex justify-between items-center">
+                <div class="border border-gray-200 dark:border-dark-border rounded-lg p-3 md:p-4 hover:shadow-md transition-shadow fade-in bg-white dark:bg-dark-card">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-center space-y-3 md:space-y-0">
                         <div class="flex-1">
                             <div class="grid grid-cols-3 items-center mb-2">
                                 <div class="flex items-center justify-end">
                                     {{if .HomeLogo}}
-                                    <img src="/assets/teams/{{.HomeLogo}}" alt="{{.HomeTeam}} Logo" class="w-8 h-8 mr-3 rounded-full">
+                                    <img src="/assets/teams/{{.HomeLogo}}" alt="{{.HomeTeam}} Logo" class="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 rounded-full">
                                     {{end}}
-                                    <span class="font-semibold text-lg text-gray-900 dark:text-dark-text text-right">{{.HomeTeam}}</span>
+                                    <span class="font-semibold text-sm md:text-lg text-gray-900 dark:text-dark-text text-right truncate">{{.HomeTeam}}</span>
                                 </div>
                                 <div class="flex flex-col items-center justify-center">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">vs</span>
+                                    <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400">vs</span>
                                 </div>
                                 <div class="flex items-center justify-start">
-                                    <span class="font-semibold text-lg text-gray-900 dark:text-dark-text text-left">{{.AwayTeam}}</span>
+                                    <span class="font-semibold text-sm md:text-lg text-gray-900 dark:text-dark-text text-left truncate">{{.AwayTeam}}</span>
                                     {{if .AwayLogo}}
-                                    <img src="/assets/teams/{{.AwayLogo}}" alt="{{.AwayTeam}} Logo" class="w-8 h-8 ml-3 rounded-full">
+                                    <img src="/assets/teams/{{.AwayLogo}}" alt="{{.AwayTeam}} Logo" class="w-6 h-6 md:w-8 md:h-8 ml-2 md:ml-3 rounded-full">
                                     {{end}}
                                 </div>
                             </div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">{{.Location}}</div>
+                            <div class="text-xs md:text-sm text-gray-600 dark:text-gray-400">{{.Location}}</div>
                         </div>
-                        <div class="ml-6 text-right">
-                            <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">{{.Date}}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">{{.Time}}</div>
+                        <div class="md:ml-6 text-center md:text-right">
+                            <div class="text-base md:text-lg font-semibold text-blue-600 dark:text-blue-400">{{.Date}}</div>
+                            <div class="text-xs md:text-sm text-gray-500 dark:text-gray-400">{{.Time}}</div>
                         </div>
                     </div>
                 </div>
@@ -114,13 +114,13 @@
 
 <!-- Floating Navigation Button -->
 {{if or .FinishedMatches .UpcomingMatches}}
-<div id="floating-nav" class="fixed bottom-6 right-6 z-50">
+<div id="floating-nav" class="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">
     <button 
         id="nav-button"
-        class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 transform hover:scale-110"
+        class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-full p-3 md:p-4 shadow-lg transition-all duration-200 transform hover:scale-110 active:scale-95 touch-manipulation"
         onclick="navigateToNextSection()"
         title="Navigate to next section">
-        <svg id="nav-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg id="nav-icon" class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
         </svg>
     </button>

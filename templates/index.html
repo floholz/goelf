@@ -41,8 +41,8 @@
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-dark-bg min-h-screen transition-colors duration-200">
-    <div class="container mx-auto px-4 py-8">
-        <header class="text-center mb-8">
+    <div class="container mx-auto px-4 py-4 md:py-8">
+        <header class="text-center mb-6 md:mb-8">
             <div class="flex justify-between items-center mb-4">
                 <div></div> <!-- Spacer -->
                 <button 
@@ -57,11 +57,11 @@
                     </svg>
                 </button>
             </div>
-            <div class="flex justify-center items-center mb-4">
-                <img src="/assets/elf-logo.png" alt="ELF Logo" class="h-16 w-auto mr-4">
-                <div>
-                    <h1 class="text-4xl font-bold text-gray-800 dark:text-dark-text mb-2">European League Football</h1>
-                    <p class="text-gray-600 dark:text-gray-400">Live scores and upcoming matches</p>
+            <div class="flex flex-col md:flex-row justify-center items-center mb-4 space-y-2 md:space-y-0">
+                <img src="/assets/elf-logo.png" alt="ELF Logo" class="h-12 md:h-16 w-auto md:mr-4">
+                <div class="text-center md:text-left">
+                    <h1 class="text-2xl md:text-4xl font-bold text-gray-800 dark:text-dark-text mb-1 md:mb-2">European League Football</h1>
+                    <p class="text-sm md:text-base text-gray-600 dark:text-gray-400">Live scores and upcoming matches</p>
                 </div>
             </div>
         </header>
@@ -79,43 +79,45 @@
         </div>
 
         <!-- Navigation Tabs -->
-        <div class="flex justify-center mb-8">
-            <div class="bg-white dark:bg-dark-card rounded-lg shadow p-1">
-                <button
-                    class="px-4 py-2 rounded-md transition-colors duration-200"
-                    hx-get="/api/scoreboard"
-                    hx-target="#content"
-                    hx-swap="innerHTML"
-                    hx-trigger="click"
-                    onclick="setActiveTab(this, 'scoreboard')"
-                    id="scoreboard-tab">
-                    Standings
-                </button>
-                <button
-                    class="px-4 py-2 rounded-md transition-colors duration-200"
-                    hx-get="/api/playoffs"
-                    hx-target="#content"
-                    hx-swap="innerHTML"
-                    hx-trigger="click"
-                    onclick="setActiveTab(this, 'playoffs')"
-                    id="playoffs-tab">
-                    Playoffs
-                </button>
-                <button 
-                    class="px-4 py-2 rounded-md transition-colors duration-200"
-                    hx-get="/api/schedule"
-                    hx-target="#content"
-                    hx-swap="innerHTML"
-                    hx-trigger="click"
-                    onclick="setActiveTab(this, 'schedule')"
-                    id="schedule-tab">
-                    Schedule
-                </button>
+        <div class="flex justify-center mb-6 md:mb-8">
+            <div class="bg-white dark:bg-dark-card rounded-lg shadow p-1 w-full max-w-md">
+                <div class="grid grid-cols-3 gap-1">
+                    <button
+                        class="px-2 md:px-4 py-2 rounded-md transition-colors duration-200 text-sm md:text-base"
+                        hx-get="/api/scoreboard"
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        onclick="setActiveTab(this, 'scoreboard')"
+                        id="scoreboard-tab">
+                        Standings
+                    </button>
+                    <button
+                        class="px-2 md:px-4 py-2 rounded-md transition-colors duration-200 text-sm md:text-base"
+                        hx-get="/api/playoffs"
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        onclick="setActiveTab(this, 'playoffs')"
+                        id="playoffs-tab">
+                        Playoffs
+                    </button>
+                    <button 
+                        class="px-2 md:px-4 py-2 rounded-md transition-colors duration-200 text-sm md:text-base"
+                        hx-get="/api/schedule"
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        onclick="setActiveTab(this, 'schedule')"
+                        id="schedule-tab">
+                        Schedule
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Content Area -->
-        <div id="content" class="bg-white dark:bg-dark-card rounded-lg shadow-lg p-6 transition-colors duration-200">
+        <div id="content" class="bg-white dark:bg-dark-card rounded-lg shadow-lg p-4 md:p-6 transition-colors duration-200">
             <div class="text-center text-gray-500 dark:text-gray-400">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
                 <p class="mt-2">Loading...</p>
