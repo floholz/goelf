@@ -4,6 +4,8 @@ services:
     container_name: goelf
     #ports:
     #  - "7788:7788"
+    volumes:
+      - ./database:/app/database
     environment:
       - GIN_MODE=release
     restart: unless-stopped

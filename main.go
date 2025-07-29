@@ -8,6 +8,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -99,11 +101,58 @@ func main() {
 }
 
 func initDB() {
-	var err error
-	db, err = sql.Open("sqlite3", "./database/elf25.db")
-	if err != nil {
-		log.Fatal(err)
+	// Ensure database directory exists
+	dbDir := "./database"
+	if _, err := os.Stat(dbDir); os.IsNotExist(err) {
+		log.Println("Database directory does not exist, creating it...")
+		if err := os.MkdirAll(dbDir, 0755); err != nil {
+			log.Fatalf("Failed to create database directory: %v", err)
+		}
+		log.Println("Database directory created successfully")
 	}
+
+	// Database file path
+	dbPath := filepath.Join(dbDir, "elf25.db")
+
+	// Check if database file exists and has write permissions
+	fileExists := false
+	if fileInfo, err := os.Stat(dbPath); err == nil {
+		fileExists = true
+		// Check if file is read-only
+		if fileInfo.Mode().Perm()&0200 == 0 {
+			log.Println("Database file exists but is read-only, attempting to make it writable...")
+			// Try to make the file writable
+			if err := os.Chmod(dbPath, 0666); err != nil {
+				log.Fatalf("Failed to make database file writable: %v. Please run 'chmod 666 %s' manually.", err, dbPath)
+			}
+			log.Println("Successfully made database file writable")
+		}
+	}
+
+	// If file doesn't exist, create it with proper permissions
+	if !fileExists {
+		log.Println("Database file does not exist, creating it...")
+		file, err := os.OpenFile(dbPath, os.O_CREATE|os.O_RDWR, 0666)
+		if err != nil {
+			log.Fatalf("Failed to create database file: %v", err)
+		}
+		file.Close()
+		log.Println("Database file created successfully with write permissions")
+	}
+
+	// Open database with explicit read-write mode
+	var err error
+	db, err = sql.Open("sqlite3", dbPath+"?mode=rw")
+	if err != nil {
+		log.Fatalf("Failed to open database: %v", err)
+	}
+
+	// Verify database connection
+	if err = db.Ping(); err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+
+	log.Println("Database connection established successfully")
 
 	// Create tables
 	createTables()

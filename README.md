@@ -87,6 +87,39 @@ The application is automatically built and pushed to GitHub Container Registry (
 - `ghcr.io/floholz/goelf:v1.0.0` - Specific version tags
 - `ghcr.io/floholz/goelf:main` - Latest from main branch
 
+#### Ubuntu Server Deployment
+
+When deploying on Ubuntu servers, the application now includes built-in database initialization directly in the Go code. The application will:
+
+1. Check if the database directory exists and create it if needed
+2. Create the database file automatically if it doesn't exist
+3. **Detect and fix read-only database files** - If the database file exists but is read-only, the application will attempt to make it writable
+4. Open the database in explicit read-write mode to prevent "readonly database" errors
+5. Set up the necessary database tables
+6. Provide clear error messages if any issues are encountered
+
+To deploy on Ubuntu servers:
+
+```bash
+# Create the database directory (if it doesn't exist)
+mkdir -p ./database
+
+# Start the container
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+If you encounter permission issues, you may need to adjust permissions on the host:
+
+```bash
+# Set appropriate permissions for the database directory
+chmod 755 ./database
+
+# If you still see "attempt to write a readonly database" errors, set write permissions on the database file
+chmod 666 ./database/elf25.db
+```
+
+This approach simplifies deployment as the application handles all database setup automatically, including detecting and fixing read-only database files.
+
 ## Project Structure
 
 ```

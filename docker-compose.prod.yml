@@ -1,0 +1,24 @@
+﻿services:
+  goelf:
+    image: ghcr.io/floholz/goelf:latest
+    container_name: goelf
+    networks:
+      - traefik-net
+    volumes:
+      - ./database:/app/database
+    user: root
+    environment:
+      - GIN_MODE=release
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.goelf-https.entrypoints: "websecure"
+      traefik.http.routers.goelf-https.rule: "Host(`elf.floholz.dev`)"
+      traefik.http.routers.goelf-https.tls: "true"
+      traefik.http.routers.goelf-https.tls.certresolver: "letsencrypt"
+      traefik.http.services.goelf-https.loadBalancer.server.port: "7788"
+      traefik.http.routers.goelf-https.middlewares: "maintenance@file"
+
+networks:
+  traefik-net:
+    external: true
