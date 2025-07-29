@@ -1,0 +1,10 @@
+services:
+  goelf_local:
+    container_name: goelf_local
+    build:
+      no_cache: true
+    ports:
+      - "7788:7788"
+    environment:
+      - GIN_MODE=release
+    restart: unless-stopped

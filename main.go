@@ -91,9 +91,11 @@ func main() {
 		})
 	})
 
+	r.HEAD("/", func(c *gin.Context) { c.Status(http.StatusOK) })
+
 	// Start server
-	log.Println("Server starting on :8080")
-	log.Fatal(r.Run(":8080"))
+	log.Println("Server starting on :7788")
+	log.Fatal(r.Run(":7788"))
 }
 
 func initDB() {
