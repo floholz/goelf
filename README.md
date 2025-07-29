@@ -171,6 +171,15 @@ goelf/
 4. Click "Refresh Data" to manually update the data
 5. Data automatically refreshes every 5 minutes
 
+## Data Formats
+
+The application displays data in the following formats:
+
+- **Date Format**: DD.MM. (e.g., 17.05.)
+- **Time Format**: hh:mm (e.g., 19:00)
+
+These formats are applied to the schedule page to provide a consistent and user-friendly display of match dates and times.
+
 ## Development
 
 ### Adding New API Endpoints

@@ -401,7 +401,19 @@ func getSchedule(c *gin.Context) {
 			if len(dateStr) == 10 && dateStr[4] == '-' && dateStr[7] == '-' {
 				day := dateStr[8:10]
 				month := dateStr[5:7]
-				s.Date = day + "." + month
+				s.Date = day + "." + month + "."
+			}
+		}
+
+		// Format time to hh:mm
+		if len(s.Time) >= 5 {
+			// Check if time is in format like "19:00:00" or "19:00"
+			if (len(s.Time) >= 8 && s.Time[2] == ':' && s.Time[5] == ':') ||
+				(len(s.Time) >= 5 && s.Time[2] == ':') {
+				// Extract hours and minutes
+				hours := s.Time[:2]
+				minutes := s.Time[3:5]
+				s.Time = hours + ":" + minutes
 			}
 		}
 
